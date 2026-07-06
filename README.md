@@ -15,23 +15,29 @@ A small multi-core neural network accelerator built in Verilog.
 
 
 ## Architecture
-
-                 AXI4-Lite (task descriptors, status, IRQ)
-   [ Host ] ───────────────────────────────► [ npu_dispatcher ]
-                                                            │
-                                    ┌───────────────────────┼───────────────────────┐
-                                    ▼                       ▼                       ▼
-                              [ worker_core 0 ]       [ worker_core 1 ]   ...  [ worker_core N-1 ]
-                              (data-parallel, no inter-core communication)
-                                    │                       │                       │
-                             cache+prefetch          cache+prefetch          cache+prefetch
-                                    │                       │                       │
-                                    └───────────────────────┼───────────────────────┘
-                                                            ▼
-                                                     [ mem_arbiter ]
-                                                            │
-                                                            ▼
-                                                  [ shared memory / DRAM ]
+```
+   Host
+     |
+     |  AXI4-Lite (task descriptors, status, IRQ)
+     v
+npu_dispatcher
+     |
+     |  fans out independent tasks (data-parallel, no inter-core communication)
+     |
+     +----------------+----------------+-----------------+
+     v                v                v                 v
+worker_core_0    worker_core_1    worker_core_2   ...  worker_core_(N-1)
+  (cache+           (cache+           (cache+             (cache+
+   prefetch)         prefetch)         prefetch)           prefetch)
+     |                |                |                 |
+     +----------------+----------------+-----------------+
+                       |
+                       v
+                 mem_arbiter
+                       |
+                       v
+             shared memory / DRAM
+```
 
 Each `worker_core` wraps:
 - an BF16 systolic-array compute datapath (`accelerator` → `controller`
@@ -47,22 +53,22 @@ cores.
 ## Repository layout
 
 npu_v1/
-Makefile                  # VCS/Verdi/irun/Questa run targets, reads file list from files.f
-files.f                   # filelist for compilation; testbench line is uncommented to pick which tb to build
+-Makefile                  # VCS/Verdi/irun/Questa run targets, reads file list from files.f
+-files.f                   # filelist for compilation; testbench line is uncommented to pick which tb to build
 
-rtl/
-  accelerator.v, controller.v, PE.v, PE_row.v, PE_array.v,
-  bf16_add.v, bf16_mul.v, shifter.v, SRAM.v,
-  input_buffer.v, weight_buffer.v, output_buffer.v   # compute datapath
-  worker_core.v           # wraps the compute datapath with cache/prefetch/writeback
-  l1_cache.v              # per-core L1 cache (single-outstanding fill, pre-MSHR)
-  stride_prefetcher.v     # IP-stride hardware prefetcher
-  mem_arbiter.v           # shared-memory arbiter (round-robin, single-outstanding/locked)
-  npu_dispatcher.v        # AXI4-Lite slave, task descriptors + status
-  npu_top.v               # top-level: dispatcher + N workers + arbiter
-  main_memory.v           # behavioral fixed-latency memory model, for simulation only
+ rtl/
+  -accelerator.v, controller.v, PE.v, PE_row.v, PE_array.v,
+  -bf16_add.v, bf16_mul.v, shifter.v, SRAM.v,
+  -input_buffer.v, weight_buffer.v, output_buffer.v   # compute datapath
+  -worker_core.v           # wraps the compute datapath with cache/prefetch/writeback
+  -l1_cache.v              # per-core L1 cache (single-outstanding fill, pre-MSHR)
+  -stride_prefetcher.v     # IP-stride hardware prefetcher
+  -mem_arbiter.v           # shared-memory arbiter (round-robin, single-outstanding/locked)
+  -npu_dispatcher.v        # AXI4-Lite slave, task descriptors + status
+  -npu_top.v               # top-level: dispatcher + N workers + arbiter
+  -main_memory.v           # behavioral fixed-latency memory model, for simulation only
 
-tb/
+ tb/
   tb_pe.v                 # standalone PE (single systolic-array cell) self-check
   tb_core.v               # standalone controller/datapath self-check (pre-accelerator wrapper)
   tb_accelerator_direct.v # drives accelerator directly, dumps output_buffer contents for golden comparison
@@ -73,7 +79,7 @@ tb/
   tb_npu_dispatcher.v     # AXI4-Lite BFM driving the dispatcher register file
   tb_npu_top.v            # full-stack integration test: AXI4-Lite -> dispatcher -> workers -> arbiter -> memory
 
-data/
+ data/
   pe_testvector_generator.py   # generates bf16 test vectors for tb_pe.v
   pe_test_vectors.txt          # generated input vectors (hex bf16) consumed by tb_pe.v
   pe_test_results.txt          # expected output vectors for tb_pe.v

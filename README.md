@@ -52,20 +52,20 @@ cores.
 
 ## Repository layout
 
-npu_v1/
-  Makefile                  # VCS/Verdi/irun/Questa run targets, reads file list from files.f
-  files.f                   # filelist for compilation; testbench line is uncommented to pick which tb to build
+npu_v1/  
+  Makefile ---------- # VCS/Verdi/irun/Questa run targets, reads file list from files.f  
+  files.f ---------- # filelist for compilation; testbench line is uncommented to pick which tb to build  
 
   rtl/  
     bf16_add.v, bf16_mul.v, shifter.v, SRAM.v,  
-    input_buffer.v, weight_buffer.v, output_buffer.v   # compute datapath  
-    worker_core.v           # wraps the compute datapath with cache/prefetch/writeback  
-    l1_cache.v              # per-core L1 cache (single-outstanding fill, pre-MSHR)  
-    stride_prefetcher.v     # IP-stride hardware prefetcher  
-    mem_arbiter.v           # shared-memory arbiter (round-robin, single-outstanding/locked)  
-    npu_dispatcher.v        # AXI4-Lite slave, task descriptors + status  
-    npu_top.v               # top-level: dispatcher + N workers + arbiter  
-    main_memory.v           # behavioral fixed-latency memory model, for simulation only  
+    input_buffer.v, weight_buffer.v, output_buffer.v ---------- #compute datapath  
+    worker_core.v            ---------- # wraps the compute datapath with cache/prefetch/writeback  
+    l1_cache.v              ----------  # per-core L1 cache (single-outstanding fill, pre-MSHR)  
+    stride_prefetcher.v     ----------  # IP-stride hardware prefetcher  
+    mem_arbiter.v           ----------  # shared-memory arbiter (round-robin, single-outstanding/locked)  
+    npu_dispatcher.v      ----------    # AXI4-Lite slave, task descriptors + status  
+    npu_top.v            ----------     # top-level: dispatcher + N workers + arbiter  
+    main_memory.v         ----------    # behavioral fixed-latency memory model, for simulation only  
 
  tb/  
     tb_pe.v                 # standalone PE (single systolic-array cell) self-check  

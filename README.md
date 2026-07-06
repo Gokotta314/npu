@@ -56,8 +56,19 @@ npu_v1/
 -Makefile                  # VCS/Verdi/irun/Questa run targets, reads file list from files.f
 -files.f                   # filelist for compilation; testbench line is uncommented to pick which tb to build
 
- rtl/
-  -accelerator.v, controller.v, PE.v, PE_row.v, PE_array.v,
+  rtl/
+    accelerator.v
+    controller.v
+    PE.v
+    PE_row.v
+    PE_array.v
+    bf16_add.v
+    bf16_mul.v
+    shifter.v
+    SRAM.v
+    input_buffer.v
+    weight_buffer.v
+    accelerator.v, controller.v, PE.v, PE_row.v, PE_array.v,
   -bf16_add.v, bf16_mul.v, shifter.v, SRAM.v,
   -input_buffer.v, weight_buffer.v, output_buffer.v   # compute datapath
   -worker_core.v           # wraps the compute datapath with cache/prefetch/writeback

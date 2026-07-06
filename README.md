@@ -68,24 +68,24 @@ npu_v1/
     main_memory.v         ----------    # behavioral fixed-latency memory model, for simulation only  
 
  tb/  
-    tb_pe.v                 # standalone PE (single systolic-array cell) self-check  
-    tb_core.v               # standalone controller/datapath self-check (pre-accelerator wrapper)  
-    tb_accelerator_direct.v # drives accelerator directly, dumps output_buffer contents for golden comparison  
-    tb_main_memory.v        # main_memory.v latency/pipelining/RAW self-check  
-    tb_l1_cache.v           # l1_cache + stride_prefetcher self-check (hit/miss/prefetch counters)  
-    tb_worker_core.v        # worker_core vs. golden accelerator cross-check  
-    tb_mem_arbiter.v        # two-master round-robin arbiter self-check (response routing + fairness)  
-    tb_npu_dispatcher.v     # AXI4-Lite BFM driving the dispatcher register file  
-    tb_npu_top.v            # full-stack integration test: AXI4-Lite -> dispatcher -> workers -> arbiter -> memory  
+    tb_pe.v               ----------    # standalone PE (single systolic-array cell) self-check  
+    tb_core.v              ----------   # standalone controller/datapath self-check (pre-accelerator wrapper)  
+    tb_accelerator_direct.v ----------  # drives accelerator directly, dumps output_buffer contents for golden comparison  
+    tb_main_memory.v    ----------      # main_memory.v latency/pipelining/RAW self-check  
+    tb_l1_cache.v        ----------     # l1_cache + stride_prefetcher self-check (hit/miss/prefetch counters)  
+    tb_worker_core.v      ----------    # worker_core vs. golden accelerator cross-check  
+    tb_mem_arbiter.v       ----------   # two-master round-robin arbiter self-check (response routing + fairness)  
+    tb_npu_dispatcher.v   ----------    # AXI4-Lite BFM driving the dispatcher register file  
+    tb_npu_top.v         ----------     # full-stack integration test: AXI4-Lite -> dispatcher -> workers -> arbiter -> memory  
 
  data/  
-   pe_testvector_generator.py   # generates bf16 test vectors for tb_pe.v  
-   pe_test_vectors.txt          # generated input vectors (hex bf16) consumed by tb_pe.v  
-   pe_test_results.txt          # expected output vectors for tb_pe.v  
-   pe_test_check.py             # compares simulated PE output against pe_test_results.txt  
-   single_core_test_check.py    # compares tb_core.v/single-core sim output against golden results  
-   single_core_test_vectors.txt # input vectors for the single-core controller/datapath test  
-   single_core_test_results.txt # expected output for the single-core controller/datapath test  
+   pe_testvector_generator.py  ----------   # generates bf16 test vectors for tb_pe.v  
+   pe_test_vectors.txt       ----------     # generated input vectors (hex bf16) consumed by tb_pe.v  
+   pe_test_results.txt       ----------     # expected output vectors for tb_pe.v  
+   pe_test_check.py          ----------     # compares simulated PE output against pe_test_results.txt  
+   single_core_test_check.py  ----------    # compares tb_core.v/single-core sim output against golden results  
+   single_core_test_vectors.txt ----------  # input vectors for the single-core controller/datapath test  
+   single_core_test_results.txt  ---------- # expected output for the single-core controller/datapath test  
   
 All RTL in this repository has been simulated and passes the corresponding
 self-checking testbench with VCS.
